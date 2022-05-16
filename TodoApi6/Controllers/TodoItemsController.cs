@@ -17,13 +17,17 @@ namespace TodoApi6.Controllers
 
         // GET: api/TodoItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TodoItem>>> GetTodoItems()
+        public async Task<ActionResult<IEnumerable<TodoItemDTO>>> GetTodoItems()
         {
-          if (_context.TodoItems == null)
-          {
-              return NotFound();
-          }
-            return await _context.TodoItems.ToListAsync();
+            return await _context.TodoItems
+                .Select(x => ItemToDTO(x))
+                .ToListAsync();
+
+          //if (_context.TodoItems == null)
+          //{
+          //    return NotFound();
+          //}
+          //  return await _context.TodoItems.ToListAsync();
         }
 
         // GET: api/TodoItems/5
@@ -114,5 +118,13 @@ namespace TodoApi6.Controllers
         {
             return (_context.TodoItems?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        private static TodoItemDTO ItemToDTO(TodoItem todoItem) =>
+            new TodoItemDTO
+            {
+                Id = todoItem.Id,
+                Name = todoItem.Name,
+                IsComplete = todoItem.IsComplete
+            };
     }
 }
